@@ -51,6 +51,8 @@ sequenceDiagram
 
 ## Cilium
 
+As a network CNI I chose cilium
+
 ## API HA
 
 I needed the following for my cluster :
@@ -61,7 +63,7 @@ I needed the following for my cluster :
   - That eliminates DNS round robin for instance
 
 That why I chose Kube-VIP. It's a daemonset that is deployed during the creation of the cluster.  
-Kube-VIP uses a leader election mechanism (using Kubernetes Lease or Raft). The elected leader owns and advertises the VIP.
+Kube-VIP uses a leader election mechanism (using Kubernetes Lease or Raft). The elected leader owns and advertises the VIP via **gratuitous ARP**.
 
 If the leader node goes down:
 
@@ -69,3 +71,47 @@ If the leader node goes down:
 - Another node is elected
 - The new node starts advertising the VIP
 - Traffic fails over seamlessly
+
+# Storage
+
+I am using my Synology 920+ as backend storage.
+I am relying on the synology-csi drive for kube [here](https://github.com/SynologyOpenSource/synology-csi)
+
+That allows : 
+
+- Multiples LUNs
+- Thin that permit dynamic provisioning and therefore snapshot
+
+# Architecture decision
+
+## Hardware
+
+## OS
+
+## CD
+
+Argo CD:
+
+- Pros :
+  - More used in the industry
+  - Beautiful UI and easy to use
+- Cons :
+  - Harder to bootstrap than flux
+  - Resource intensive
+
+Flux CD:
+
+- Pros :
+  - Lightweight
+  - Discovering a new tool (never work with it)
+  - Works well with SOPS (for secrets)
+- Cons :
+  - No UI that would have facilitate the day to day
+
+# To check
+
+- https://github.com/kashalls/kromgo
+
+# Links
+
+- https://onedr0p.github.io/home-ops/
