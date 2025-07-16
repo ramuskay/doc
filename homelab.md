@@ -74,13 +74,38 @@ If the leader node goes down:
 
 # Storage
 
-I am using my Synology 920+ as backend storage.
-I am relying on the synology-csi drive for kube [here](https://github.com/SynologyOpenSource/synology-csi)
+Here the diagram of the architecture
 
-That allows : 
+```mermaid
+flowchart TD
+ subgraph subGraph0["CANADA - Home Network"]
+        K3sMaster("Node1")
+        K3sWorker1("Node2")
+        K3sWorker2("Node3")
+        Longhorn[("Longhorn Storage")]
+        SynoNAS[("Synology NAS - Local")]
+  end
+ subgraph s1["France"]
+        ExternalNAS[("External NAS - Remote")]
+  end
+    K3sMaster --> Longhorn
+    K3sWorker1 --> Longhorn
+    K3sWorker2 --> Longhorn
+    Longhorn -- "NFS - Nightly backup" --> SynoNAS
+    SynoNAS -- Mirror over WAN --> s1
 
-- Multiples LUNs
-- Thin that permit dynamic provisioning and therefore snapshot
+    style s1 fill:#C8E6C9
+    style subGraph0 fill:#BBDEFB
+```
+
+I am trying to do the 3-2-1 strategy for my storage :
+
+- 3 copies of your data ==> Longhorn + Synology + External NAS
+- 2 different types of storage media ==> Longhorn block storage + NAS (file-based) (even if technically it's classic hard drive disks)
+- 1 copy off-site ==> External NAS in another country
+
+LongHorn is acting as main datastore data for live data while my Synology NAS are for cold backup storage  
+The Synology devices are synced through Synology Drive ShareSync
 
 # Architecture decision
 
@@ -108,9 +133,73 @@ Flux CD:
 - Cons :
   - No UI that would have facilitate the day to day
 
+## Storage
+
+Multiple choices :
+
+- Synology
+  - Pros:
+    - No overhead on K8s cluster
+    - Classic, stable and solid solution
+    - EASY solution (less than 10min to setup)
+  - Cons:
+    - Single point of failure (the device itself not the disks)
+- Rook
+  - Pros:
+    - Cloud-native
+    - Local so probably a bit "faster"
+    - Not a Single Point of Failure because distributed
+  - Cons:
+    - Resource overhead (to be calculated) ==> Pretty big, almost 2GB RAM per node
+    - More complex than the iSCI Synology one (but to be calculated also)
+- LongHorn
+  - Pros:
+    - Cloud-native
+    - Local so probably a bit "faster"
+    - Not a Single Point of Failure because distributed
+    - Lightweight
+  - Cons:
+    - Lightweight but still resource overhead compared to external solution
+    - More complex than the iSCI Synology one (but to be calculated also)
+
+Benchmark :
+- Local
+```
+==================
+= Dbench Summary =
+==================
+Random Read/Write IOPS: 79.9k/58.3k. BW: 364MiB/s / 429MiB/s
+Average Latency (usec) Read/Write: 228.64/69.30
+Sequential Read/Write: 534MiB/s / 463MiB/s
+Mixed Random Read/Write IOPS: 33.7k/11.2k
+```
+- Synology
+```
+==================
+= Dbench Summary =
+==================
+Random Read/Write IOPS: 2664/4115. BW: 25.2MiB/s / 20.7MiB/s
+Average Latency (usec) Read/Write: /
+Sequential Read/Write: 24.9MiB/s / 29.2MiB/s
+Mixed Random Read/Write IOPS: 1003/342
+```
+- LongHorn
+```
+==================
+= Dbench Summary =
+==================
+Random Read/Write IOPS: 3973/2964. BW: 112MiB/s / 40.3MiB/s
+Average Latency (usec) Read/Write: 3177.81/
+Sequential Read/Write: 127MiB/s / 38.5MiB/s
+Mixed Random Read/Write IOPS: 1313/445
+```
+
+
 # To check
 
 - https://github.com/kashalls/kromgo
+- https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider)
+- Signoz pour la supervision ? (tout en 1)
 
 # Links
 
