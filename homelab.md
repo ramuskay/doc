@@ -107,6 +107,60 @@ I am trying to do the 3-2-1 strategy for my storage :
 LongHorn is acting as main datastore data for live data while my Synology NAS are for cold backup storage  
 The Synology devices are synced through Synology Drive ShareSync
 
+## Backup
+
+For the backup I am relying on Longhorn internal features :
+
+- System backup : It is saving the control-plane data of Longhorn (config, volume spec etc...).
+  - Really lightweight and stored on the Synology
+  - Run every 30 minutes
+  - Create a snapshot on every volume each time it's doing its backup (there is another task to delete old replicas)
+- Volume backup : It is saving the Volume themselves with their data. Stored on the Synology
+  - Run every week
+
+## Restore
+
+On the restore part, two ways of proceeding :
+
+- The cluster is dead but the local disks are fine
+  - During the rebuild Longhorn will restore one of the system backup and use the last snapshot of the backuped volume
+- The cluster is dead, disks as well
+  - Rebuild the cluster and restore data manually through volume backups
+
+# Pipeline
+
+## CD : FluxCD
+
+```mermaid
+sequenceDiagram
+    participant GitRepo as Git Repository
+    participant Helm as Helm Operator
+    participant K8s as Kubernetes Cluster
+
+
+    alt Check and update
+        Helm->>GitRepo: Check new version
+        GitRepo->>Helm: Download if new
+    end
+
+    alt Rendering and deployment
+        Helm->>Helm: Render Chart
+        Helm->>K8s: Apply manifest
+    end
+```
+## Secrets
+
+The critical part here is not really how to handle the secrets themselves but more the secret zero that avoids to enter in a **chicken and eggs scenario**
+The plan is to :
+
+- When bootstrapping the cluster, use SOPS for create secret zero
+- Beyond SOPS, using External Secrets Operator to pull in everything else
+
+
+NB : for onedr0p it's Task file ==> `minijinja-cli "${file}" | op inject` ==> Replace  `op://kubernetes/sops/SOPS_PRIVATE_KEY` for the secret 0 (sops-age) manifest ==> Secret used in the bootstrap kustomization
+
+
+
 # Architecture decision
 
 ## Hardware
@@ -200,6 +254,7 @@ Mixed Random Read/Write IOPS: 1313/445
 - https://github.com/kashalls/kromgo
 - https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider)
 - Signoz pour la supervision ? (tout en 1)
+- 
 
 # Links
 
