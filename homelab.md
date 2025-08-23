@@ -1,6 +1,8 @@
-# Baremetal install
+# OS
 
-The install is based on Flatcar on 3 mini PC  
+## Baremetal install
+
+The install is based on Flatcar on 3 mini PC
 For flatcar installation we are relying on the following components :
 
 - PXE
@@ -46,6 +48,16 @@ sequenceDiagram
 - `generate.sh`: Generate the butane config and therefore the ignition one. Copy at the right place also.
 - `rebuild_node.sh`: Force boot on PXE and the wanted node (doing some mandatory prerequisite actions).
 - `rebuild_cluster.sh`: Force boot on PXE and restart all the nodes.
+
+## System updates
+
+The updates of the flatcar OS are controlled by `kured`.
+It's an workload that is controlling the reboot of every node inside the cluster, here the key features :
+
+- Automatic node reboots after updates : works with Flatcar directly, flatcar is downloading the new image and create a flag which is detected by kured to notify that a reboot is needed
+- Coordinated reboots with locking : Ensure 1 node is rebooted at the same time
+- Do kube operation: Will do the draining of the node for instance
+- Highly configurable
 
 # K3s install
 
@@ -248,13 +260,27 @@ Sequential Read/Write: 127MiB/s / 38.5MiB/s
 Mixed Random Read/Write IOPS: 1313/445
 ```
 
+# Disaster recovery
+
+- Using the rebuild_cluster script ✅
+  - Expected result
+  - Data correctly restores
+- Doing a reboot on every node ✅
+  - Expected result
+  - Data is not restored in that case but picked up correctly by Longhorn
+  - No corruption (at least for the few tests I did) on the volume part
+  - Took less than 5 minutes to have the pod up & running
+- Unplug power cable on every node at the same time ✅
+  - Exact same result as above
+
+Note : In the last two cases pods are in an unknown state. I used only podinfo to do my test but having more intensive workload could make sense ==> to be redone
 
 # To check
 
 - https://github.com/kashalls/kromgo
 - https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider)
 - Signoz pour la supervision ? (tout en 1)
-- 
+- Tianji pour un uptime kuma ++ ?
 
 # Links
 
