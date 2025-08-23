@@ -61,9 +61,11 @@ It's an workload that is controlling the reboot of every node inside the cluster
 
 # K3s install
 
-## Cilium
+## Network
 
 As a network CNI I chose cilium
+
+![Architecture](./network_k3s.svg)
 
 ## API HA
 
