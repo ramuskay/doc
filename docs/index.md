@@ -72,9 +72,9 @@ As a network CNI I chose cilium
 I needed the following for my cluster :
 
 - A single point of contact for the API
-  - When I want to reach it for API calls or a node joining the cluster
+    - When I want to reach it for API calls or a node joining the cluster
 - Full availability if a node come down
-  - That eliminates DNS round robin for instance
+    - That eliminates DNS round robin for instance
 
 That why I chose Kube-VIP. It's a daemonset that is deployed during the creation of the cluster.  
 Kube-VIP uses a leader election mechanism (using Kubernetes Lease or Raft). The elected leader owns and advertises the VIP via **gratuitous ARP**.
@@ -126,20 +126,20 @@ The Synology devices are synced through Synology Drive ShareSync
 For the backup I am relying on Longhorn internal features :
 
 - System backup : It is saving the control-plane data of Longhorn (config, volume spec etc...).
-  - Really lightweight and stored on the Synology
-  - Run every 30 minutes
-  - Create a snapshot on every volume each time it's doing its backup (there is another task to delete old replicas)
+    - Really lightweight and stored on the Synology
+    - Run every 30 minutes
+    - Create a snapshot on every volume each time it's doing its backup (there is another task to delete old replicas)
 - Volume backup : It is saving the Volume themselves with their data. Stored on the Synology
-  - Run every week
+    - Run every week
 
 ## Restore
 
 On the restore part, two ways of proceeding :
 
 - The cluster is dead but the local disks are fine
-  - During the rebuild Longhorn will restore one of the system backup and use the last snapshot of the backuped volume
+    - During the rebuild Longhorn will restore one of the system backup and use the last snapshot of the backuped volume
 - The cluster is dead, disks as well
-  - Rebuild the cluster and restore data manually through volume backups
+    - Rebuild the cluster and restore data manually through volume backups
 
 # Pipeline
 
@@ -186,49 +186,49 @@ NB : for onedr0p it's Task file ==> `minijinja-cli "${file}" | op inject` ==> Re
 Argo CD:
 
 - Pros :
-  - More used in the industry
-  - Beautiful UI and easy to use
+    - More used in the industry
+    - Beautiful UI and easy to use
 - Cons :
-  - Harder to bootstrap than flux
-  - Resource intensive
+    - Harder to bootstrap than flux
+    - Resource intensive
 
 Flux CD:
 
 - Pros :
-  - Lightweight
-  - Discovering a new tool (never work with it)
-  - Works well with SOPS (for secrets)
+    - Lightweight
+    - Discovering a new tool (never work with it)
+    - Works well with SOPS (for secrets)
 - Cons :
-  - No UI that would have facilitate the day to day
+    - No UI that would have facilitate the day to day
 
 ## Storage
 
 Multiple choices :
 
 - Synology
-  - Pros:
-    - No overhead on K8s cluster
-    - Classic, stable and solid solution
-    - EASY solution (less than 10min to setup)
-  - Cons:
-    - Single point of failure (the device itself not the disks)
+    - Pros:
+      - No overhead on K8s cluster
+      - Classic, stable and solid solution
+      - EASY solution (less than 10min to setup)
+    - Cons:
+      - Single point of failure (the device itself not the disks)
 - Rook
-  - Pros:
-    - Cloud-native
-    - Local so probably a bit "faster"
-    - Not a Single Point of Failure because distributed
-  - Cons:
-    - Resource overhead (to be calculated) ==> Pretty big, almost 2GB RAM per node
-    - More complex than the iSCI Synology one (but to be calculated also)
+    - Pros:
+      - Cloud-native
+      - Local so probably a bit "faster"
+      - Not a Single Point of Failure because distributed
+    - Cons:
+      - Resource overhead (to be calculated) ==> Pretty big, almost 2GB RAM per node
+      - More complex than the iSCI Synology one (but to be calculated also)
 - LongHorn
-  - Pros:
-    - Cloud-native
-    - Local so probably a bit "faster"
-    - Not a Single Point of Failure because distributed
-    - Lightweight
-  - Cons:
-    - Lightweight but still resource overhead compared to external solution
-    - More complex than the iSCI Synology one (but to be calculated also)
+    - Pros:
+      - Cloud-native
+      - Local so probably a bit "faster"
+      - Not a Single Point of Failure because distributed
+      - Lightweight
+    - Cons:
+      - Lightweight but still resource overhead compared to external solution
+      - More complex than the iSCI Synology one (but to be calculated also)
 
 Benchmark :
 - Local
@@ -265,15 +265,15 @@ Mixed Random Read/Write IOPS: 1313/445
 # Disaster recovery
 
 - Using the rebuild_cluster script ✅
-  - Expected result
-  - Data correctly restores
+    - Expected result
+    - Data correctly restores
 - Doing a reboot on every node ✅
-  - Expected result
-  - Data is not restored in that case but picked up correctly by Longhorn
-  - No corruption (at least for the few tests I did) on the volume part
-  - Took less than 5 minutes to have the pod up & running
+    - Expected result
+    - Data is not restored in that case but picked up correctly by Longhorn
+    - No corruption (at least for the few tests I did) on the volume part
+    - Took less than 5 minutes to have the pod up & running
 - Unplug power cable on every node at the same time ✅
-  - Exact same result as above
+    - Exact same result as above
 
 Note : In the last two cases pods are in an unknown state. I used only podinfo to do my test but having more intensive workload could make sense ==> to be redone
 
