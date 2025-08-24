@@ -1,37 +1,46 @@
-name: Build and Deploy Markdown to GitHub Pages
+name: Deploy MkDocs to GitHub Pages
 
 on:
   push:
     branches:
       - main  # or your default branch
+
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-    - name: Install Markdown-to-HTML tool
-      run: npm install -g markdown-it
+      - name: Install MkDocs and plugins
+        run: |
+          pip install mkdocs mkdocs-material mkdocs-mermaid2-plugin
 
-    - name: Convert Markdown to HTML
-      run: |
-        mkdir -p site
-        for f in *.md; do
-          markdown-it "$f" -o "site/${f%.md}.html"
-        done
+      - name: Build site
+        run: mkdocs build --site-dir site
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy-pages:
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
