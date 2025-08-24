@@ -1,5 +1,6 @@
 # mkdocs.yml
 site_name: Docs
+site_url: https://ramuskay.github.io/doc/
 theme:
   name: material
 plugins:
