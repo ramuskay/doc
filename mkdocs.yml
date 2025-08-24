@@ -2,10 +2,9 @@
 site_name: Docs
 site_url: https://ramuskay.github.io/doc/
 theme:
-  name: material
+  name: mkdocs
 plugins:
   - search
-  - mermaid2
 markdown_extensions:
   - admonition
   - codehilite
