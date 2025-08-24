@@ -207,28 +207,28 @@ Multiple choices :
 
 - Synology
     - Pros:
-      - No overhead on K8s cluster
-      - Classic, stable and solid solution
-      - EASY solution (less than 10min to setup)
+        - No overhead on K8s cluster
+        - Classic, stable and solid solution
+        - EASY solution (less than 10min to setup)
     - Cons:
-      - Single point of failure (the device itself not the disks)
+        - Single point of failure (the device itself not the disks)
 - Rook
     - Pros:
-      - Cloud-native
-      - Local so probably a bit "faster"
-      - Not a Single Point of Failure because distributed
+        - Cloud-native
+        - Local so probably a bit "faster"
+        - Not a Single Point of Failure because distributed
     - Cons:
-      - Resource overhead (to be calculated) ==> Pretty big, almost 2GB RAM per node
-      - More complex than the iSCI Synology one (but to be calculated also)
+        - Resource overhead (to be calculated) ==> Pretty big, almost 2GB RAM per node
+        - More complex than the iSCI Synology one (but to be calculated also)
 - LongHorn
     - Pros:
-      - Cloud-native
-      - Local so probably a bit "faster"
-      - Not a Single Point of Failure because distributed
-      - Lightweight
+        - Cloud-native
+        - Local so probably a bit "faster"
+        - Not a Single Point of Failure because distributed
+        - Lightweight
     - Cons:
-      - Lightweight but still resource overhead compared to external solution
-      - More complex than the iSCI Synology one (but to be calculated also)
+        - Lightweight but still resource overhead compared to external solution
+        - More complex than the iSCI Synology one (but to be calculated also)
 
 Benchmark :
 - Local
