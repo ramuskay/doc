@@ -1,0 +1,14 @@
+# mkdocs.yml
+site_name: Docs
+theme:
+  name: material
+plugins:
+  - search
+  - mermaid2
+markdown_extensions:
+  - admonition
+  - codehilite
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
