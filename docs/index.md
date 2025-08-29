@@ -280,9 +280,8 @@ Note : In the last two cases pods are in an unknown state. I used only podinfo t
 # To check
 
 - https://github.com/kashalls/kromgo
-- https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider)
-- Signoz pour la supervision ? (tout en 1)
-- Tianji pour un uptime kuma ++ ?
+- https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider) ==> GOGOGO
+- Tianji pour un uptime kuma ++ ? ==> Plutot uptimkuma ou gatus
 
 # Links
 
