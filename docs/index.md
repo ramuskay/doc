@@ -282,7 +282,12 @@ Note : In the last two cases pods are in an unknown state. I used only podinfo t
 - https://github.com/kashalls/kromgo
 - https://github.com/kubernetes-sigs/external-dns (OVHCloud Provider) ==> GOGOGO
 - Tianji pour un uptime kuma ++ ? ==> Plutot uptimkuma ou gatus
+- Dashboard : https://github.com/glanceapp/glance
 
 # Links
 
 - https://onedr0p.github.io/home-ops/
+
+## BLog 
+
+- https://blog.mei-home.net/posts/k8s-migration-21-gatus/
